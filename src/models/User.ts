@@ -3,11 +3,12 @@ import { Schema, Document, model, models } from "mongoose";
 export interface IUser extends Document {
     name: string;
     email: string;
-    password: string;
-    role: "student" | "institution";
+    password?: string;
+    role?: "student" | "institution" | null;
     isEmailVerified: boolean;
     emailVerificationToken?: string;
     emailVerificationExpires?: Date;
+    oauthProvider?: "google";
     createdAt: Date;
 }
 
@@ -26,16 +27,22 @@ const UserSchema = new Schema<IUser>({
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: function(this: IUser) {
+            return !this.oauthProvider;
+        },
     },
     role: {
         type: String,
-        enum: ["student", "institution"],
-        required: [true, "Role is required"],
+        enum: ["student", "institution", null],
+        default: null,
     },
     isEmailVerified: {
         type: Boolean,
         default: false,
+    },
+    oauthProvider: {
+        type: String,
+        enum: ["google"],
     },
     emailVerificationToken: String,
     emailVerificationExpires: Date,
