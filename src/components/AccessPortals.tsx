@@ -7,12 +7,12 @@ import { motion, Variants } from "framer-motion";
 export function AccessPortals() {
     const portals = [
         {
-            id: "university",
-            title: "University Portal",
+            id: "institution",
+            title: "Institution Portal",
             desc: "Issue and manage academic credentials securely on the ledger.",
             icon: <Building2 className="w-8 h-8" />,
-            btnText: "Login as University",
-            href: "/signin/university"
+            btnText: "Login as Institution",
+            href: "/signin"
         },
         {
             id: "student",
@@ -20,7 +20,7 @@ export function AccessPortals() {
             desc: "View, manage and share your verified academic degrees.",
             icon: <GraduationCap className="w-8 h-8" />,
             btnText: "Login as Student",
-            href: "/signin/student"
+            href: "/signin"
         },
         {
             id: "verification",
@@ -29,7 +29,7 @@ export function AccessPortals() {
             icon: <CheckCircle className="w-8 h-8" />,
             btnText: "Verify Degree",
             primary: true,
-            href: "/signin/student"
+            href: "/signin"
         }
     ];
 

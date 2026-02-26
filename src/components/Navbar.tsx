@@ -37,14 +37,14 @@ export function Navbar() {
                 </div>
 
                 <div className="hidden md:flex items-center gap-4">
-                    <Link href="/signin/university" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors px-4 py-2">
-                        University Login
+                    <Link href="/signin"
+                        className="text-sm font-medium text-text-secondary hover:text-text-primary px-4 py-2">
+                        Sign In
                     </Link>
-                    <Link href="/signin/student" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors px-4 py-2">
-                        Student Login
-                    </Link>
-                    <Link href="/signin/student" className="text-sm font-medium bg-brand text-background-base px-5 py-2.5 rounded-full hover:bg-brand-hover transition-colors">
-                        Verify Degree
+
+                    <Link href="/signup"
+                        className="text-sm font-medium bg-brand text-background-base px-5 py-2.5 rounded-full hover:bg-brand-hover transition-colors">
+                        Get Started
                     </Link>
                 </div>
 

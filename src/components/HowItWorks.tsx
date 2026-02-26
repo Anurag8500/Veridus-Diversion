@@ -6,7 +6,7 @@ export function HowItWorks() {
     const steps = [
         {
             num: "01",
-            title: "University uploads academic degree information.",
+            title: "Institution uploads academic degree information.",
             desc: "Secure intake of verified credentials directly from the issuing institution."
         },
         {

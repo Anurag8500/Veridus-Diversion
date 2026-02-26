@@ -12,10 +12,10 @@ export function ProductIntro() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/signin/university" className="px-6 py-3 bg-background-elevated border border-border-base text-text-primary rounded-lg font-medium hover:border-text-secondary transition-colors">
+                    <Link href="/signin" className="px-6 py-3 bg-background-elevated border border-border-base text-text-primary rounded-lg font-medium hover:border-text-secondary transition-colors">
                         Issue Degree
                     </Link>
-                    <Link href="/signin/student" className="px-6 py-3 bg-background-elevated border border-border-base text-text-primary rounded-lg font-medium hover:border-text-secondary transition-colors">
+                    <Link href="/signin" className="px-6 py-3 bg-background-elevated border border-border-base text-text-primary rounded-lg font-medium hover:border-text-secondary transition-colors">
                         Verify Degree
                     </Link>
                 </div>
