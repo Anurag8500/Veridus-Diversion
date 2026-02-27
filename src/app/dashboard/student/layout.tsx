@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
     LayoutDashboard,
     Wallet,
@@ -26,10 +27,10 @@ export default function StudentDashboardLayout({
 }) {
     const pathname = usePathname();
     const router = useRouter();
+    const { data: session } = useSession();
 
-    const handleLogout = () => {
-        // Simple client-side redirect for now
-        router.push("/");
+    const handleLogout = async () => {
+        await signOut({ redirect: true, callbackUrl: "/" });
     };
 
     return (
@@ -63,13 +64,10 @@ export default function StudentDashboardLayout({
 
                 <div className="p-4 border-t border-[#1C1C1C]">
                     <div className="mb-4 px-2">
-                        <p className="text-sm font-medium truncate">Student Name</p>
-                        <a
-                            href="mailto:student@email.com"
-                            className="text-xs text-gray-500 hover:text-gray-300 truncate transition-colors"
-                        >
-                            student@email.com
-                        </a>
+                        <p className="text-sm font-medium truncate">{session?.user?.name || "Student"}</p>
+                        <p className="text-xs text-gray-500 truncate transition-colors">
+                            {session?.user?.email || "student@email.com"}
+                        </p>
                     </div>
                     <button 
                         onClick={handleLogout}
@@ -88,3 +86,4 @@ export default function StudentDashboardLayout({
         </div>
     );
 }
+

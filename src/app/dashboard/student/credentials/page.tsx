@@ -159,10 +159,25 @@ export default function MyCredentialsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
-                                                <button title="View Credential" className="p-1.5 text-gray-500 hover:text-white hover:bg-[#1C1C1C] rounded transition-colors">
+                                                <button 
+                                                    title="View Credential" 
+                                                    onClick={() => window.open(`/api/certificates/${cred.degreeId}`, "_blank")}
+                                                    className="p-1.5 text-gray-500 hover:text-white hover:bg-[#1C1C1C] rounded transition-colors"
+                                                >
                                                     <Eye className="w-4 h-4" />
                                                 </button>
-                                                <button title="Download Certificate" className="p-1.5 text-gray-500 hover:text-white hover:bg-[#1C1C1C] rounded transition-colors">
+                                                <button 
+                                                    title="Download Certificate" 
+                                                    onClick={() => {
+                                                        const link = document.createElement("a");
+                                                        link.href = `/api/certificates/${cred.degreeId}`;
+                                                        link.download = `${cred.degreeId}.pdf`;
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                    }}
+                                                    className="p-1.5 text-gray-500 hover:text-white hover:bg-[#1C1C1C] rounded transition-colors"
+                                                >
                                                     <Download className="w-4 h-4" />
                                                 </button>
                                                 <button title="Share Credential" className="p-1.5 text-gray-500 hover:text-white hover:bg-[#1C1C1C] rounded transition-colors">

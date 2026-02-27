@@ -1,25 +1,49 @@
 "use client";
 
-import { Eye, Ban, Link as LinkIcon, Share2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Eye, Ban, Link as LinkIcon, Share2, Loader2 } from "lucide-react";
 
-const placeholderShared = [
-    {
-        id: "SHR-9921",
-        credentialName: "B.S. Computer Science",
-        sharedWith: "Google HR Department",
-        shareDate: "24 Nov 2023",
-        status: "Active",
-    },
-    {
-        id: "SHR-9922",
-        credentialName: "AWS Certified Solutions Architect",
-        sharedWith: "TechCorp Inc.",
-        shareDate: "10 Dec 2023",
-        status: "Revoked",
-    },
-];
+interface SharedCredential {
+    id: string;
+    credentialName: string;
+    sharedWith: string;
+    shareDate: string;
+    status: string;
+}
 
 export default function SharedCredentialsPage() {
+    const { data: session } = useSession();
+    const [sharedList, setSharedList] = useState<SharedCredential[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchShared = async () => {
+            if (!session?.user?.id) return;
+            try {
+                setLoading(true);
+                // Currently sharing is not implemented in backend, so we'll show empty state
+                // In the future, this would be: const response = await fetch(`/api/shared?studentId=${session.user.id}`);
+                setSharedList([]);
+            } catch (err) {
+                console.error("Error fetching shared credentials:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchShared();
+    }, [session?.user?.id]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 text-white animate-spin mb-4" />
+                <p className="text-gray-400">Loading shared credentials...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-8">
             <div>
@@ -29,7 +53,7 @@ export default function SharedCredentialsPage() {
                 </p>
             </div>
 
-            {placeholderShared.length > 0 ? (
+            {sharedList.length > 0 ? (
                 /* 1. Shared Credential Table */
                 <div className="rounded-xl border border-[#1C1C1C] bg-[#050505] overflow-hidden">
                     <div className="overflow-x-auto">
@@ -44,7 +68,7 @@ export default function SharedCredentialsPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {placeholderShared.map((share) => (
+                                {sharedList.map((share) => (
                                     <tr
                                         key={share.id}
                                         className="border-b border-[#1C1C1C] last:border-0 hover:bg-[#0A0A0A] transition-colors"
@@ -96,3 +120,4 @@ export default function SharedCredentialsPage() {
         </div>
     );
 }
+

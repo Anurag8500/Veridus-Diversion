@@ -1,7 +1,65 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Wallet, Share2, User } from "lucide-react";
+import { Wallet, Share2, User as UserIcon, Loader2 } from "lucide-react";
+
+interface Degree {
+    _id: string;
+    status: string;
+}
 
 export default function StudentOverviewPage() {
+    const { data: session } = useSession();
+    const [stats, setStats] = useState({
+        total: 0,
+        verified: 0,
+        shared: 0,
+        activity: 0
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            if (!session?.user?.id) return;
+
+            try {
+                setLoading(true);
+                // Fetch degrees to calculate stats
+                const response = await fetch(`/api/degrees/student?studentId=${session.user.id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const degrees: Degree[] = data.degrees;
+                    const verified = degrees.filter(d => d.status === "valid").length;
+                    
+                    setStats({
+                        total: degrees.length,
+                        verified: verified,
+                        shared: 0, // Sharing not yet implemented in backend
+                        activity: degrees.length // Simplified activity count
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching dashboard stats:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, [session?.user?.id]);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 text-white animate-spin mb-4" />
+                <p className="text-gray-400">Loading your dashboard...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-10">
             {/* 1. Page Header */}
@@ -15,7 +73,7 @@ export default function StudentOverviewPage() {
             {/* 2. Welcome Section */}
             <div className="p-8 rounded-xl bg-gradient-to-br from-[#111111] to-[#0A0A0A] border border-[#1C1C1C] relative overflow-hidden">
                 <div className="relative z-10">
-                    <h2 className="text-2xl font-medium">Welcome back, Student Name</h2>
+                    <h2 className="text-2xl font-medium">Welcome back, {session?.user?.name || "Student"}</h2>
                     <p className="text-gray-400 mt-2 max-w-2xl">
                         Your verified academic credentials are securely stored on VERIDUS.
                     </p>
@@ -25,10 +83,10 @@ export default function StudentOverviewPage() {
             {/* 3. Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: "Total Credentials", value: "3" },
-                    { label: "Verified Credentials", value: "3" },
-                    { label: "Shared Credentials", value: "1" },
-                    { label: "Recent Activity", value: "5" },
+                    { label: "Total Credentials", value: stats.total.toString() },
+                    { label: "Verified Credentials", value: stats.verified.toString() },
+                    { label: "Shared Credentials", value: stats.shared.toString() },
+                    { label: "Recent Activity", value: stats.activity.toString() },
                 ].map((stat) => (
                     <div
                         key={stat.label}
@@ -62,7 +120,7 @@ export default function StudentOverviewPage() {
                         href="/dashboard/student/profile"
                         className="flex flex-col items-center justify-center p-6 rounded-xl border border-[#1C1C1C] bg-[#0A0A0A] hover:bg-[#111] transition-colors group"
                     >
-                        <User className="w-8 h-8 text-gray-400 group-hover:text-white mb-3" />
+                        <UserIcon className="w-8 h-8 text-gray-400 group-hover:text-white mb-3" />
                         <span className="font-medium text-sm text-gray-300 group-hover:text-white">Profile</span>
                     </Link>
                 </div>
@@ -71,13 +129,24 @@ export default function StudentOverviewPage() {
             {/* 5. Recent Activity Panel */}
             <div>
                 <h2 className="text-xl font-medium mb-4">Recent Activity</h2>
-                <div className="p-12 rounded-xl border border-[#1C1C1C] bg-[#050505] text-center flex flex-col items-center justify-center">
-                    <p className="text-gray-300 font-medium">No credential activity yet.</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Your credential interactions will appear here.
-                    </p>
-                </div>
+                {stats.total > 0 ? (
+                    <div className="p-6 rounded-xl border border-[#1C1C1C] bg-[#050505] space-y-4">
+                        <div className="flex items-center gap-4 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            <p className="text-gray-300 flex-1">New credential verified: Your academic record has been updated.</p>
+                            <span className="text-gray-500">Recently</span>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="p-12 rounded-xl border border-[#1C1C1C] bg-[#050505] text-center flex flex-col items-center justify-center">
+                        <p className="text-gray-300 font-medium">No credential activity yet.</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Your credential interactions will appear here.
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+
