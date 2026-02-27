@@ -4,11 +4,14 @@ import { useState, useRef } from "react";
 import { Upload, FileText, CheckCircle2, Loader2, AlertCircle, X, FileCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAccount } from "wagmi";
 
 export default function CreateCredentialPage() {
     const { data: session } = useSession();
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { isConnected, address, status } = useAccount();
+    const walletAddress = address ?? "";
 
     const [formData, setFormData] = useState({
         studentName: "",
@@ -284,9 +287,9 @@ export default function CreateCredentialPage() {
                             <h2 className="text-xl font-medium border-b border-[#1C1C1C] pb-4">
                                 3. Certificate Upload
                             </h2>
-                            
-                            <input 
-                                type="file" 
+
+                            <input
+                                type="file"
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
                                 accept=".pdf,.jpg,.jpeg,.png"
@@ -294,7 +297,7 @@ export default function CreateCredentialPage() {
                             />
 
                             {!file ? (
-                                <div 
+                                <div
                                     onClick={() => fileInputRef.current?.click()}
                                     onDragOver={handleDragOver}
                                     onDrop={handleDrop}
@@ -325,7 +328,7 @@ export default function CreateCredentialPage() {
                                             </p>
                                         </div>
                                     </div>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={removeFile}
                                         className="p-2 text-gray-500 hover:text-red-500 transition-colors"
@@ -337,10 +340,17 @@ export default function CreateCredentialPage() {
                         </div>
 
                         {/* 5. Primary Action Button */}
-                        <div className="flex justify-end pt-4">
+                        <div className="flex flex-col items-end gap-2 pt-4">
+                            {!isConnected && (
+                                <p className="text-xs text-amber-500 flex items-center gap-1.5">
+                                    <AlertCircle className="w-3.5 h-3.5" />
+                                    Connect wallet to issue credentials
+                                </p>
+                            )}
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || !isConnected}
+                                title={!isConnected ? "Connect wallet to issue credentials" : undefined}
                                 className="px-6 py-3 bg-white text-black font-medium rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
@@ -397,7 +407,7 @@ export default function CreateCredentialPage() {
                                             <span className="text-right break-words">{formData.graduationYear || "—"}</span>
                                         </div>
                                     </div>
-                                    
+
                                     {file && (
                                         <div className="mt-4 pt-3 border-t border-[#1C1C1C] flex items-center gap-2 text-[10px] text-gray-500 italic">
                                             <FileCheck className="w-3 h-3" />
@@ -411,6 +421,15 @@ export default function CreateCredentialPage() {
                                     <p>credential preview.</p>
                                 </div>
                             )}
+                        </div>
+                        <div className="pt-4 mt-4 border-t border-[#1C1C1C] space-y-2">
+                            <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Issuer Wallet</p>
+                            {status === "reconnecting" || status === "connecting" ? null
+                                : isConnected ? (
+                                    <p className="text-xs font-mono text-green-400 break-all">{walletAddress}</p>
+                                ) : (
+                                    <p className="text-xs text-amber-500">No wallet connected</p>
+                                )}
                         </div>
                     </div>
                 </div>
