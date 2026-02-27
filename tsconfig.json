@@ -1,45 +1,40 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
-
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-
     "incremental": true,
-
     /* ✅ VERY IMPORTANT — fixes process.env + Node APIs */
-    "types": ["node"],
-
+    "types": [
+      "node"
+    ],
     /* ✅ Next.js plugin */
     "plugins": [
       {
         "name": "next"
       }
     ],
-
     /* ✅ Path alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -48,8 +43,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "veridus-contract"
   ]
 }
