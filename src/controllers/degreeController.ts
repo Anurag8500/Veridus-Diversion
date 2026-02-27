@@ -1,6 +1,7 @@
 import Degree from "@/models/Degree";
 import User from "@/models/User";
 import { generateDegreeId } from "@/lib/degreeUtils";
+import { generateCredentialHash } from "@/lib/hashCredential";
 
 /**
  * Interface for the degree issuance payload.
@@ -40,7 +41,13 @@ export const issueDegree = async (universityId: string, payload: IssueDegreePayl
         throw new Error(`Student with email ${studentEmail} not found.`);
     }
 
-    // 3. Generate UNIQUE degreeId (loop until unused)
+    // 3. Find university to get its name for hashing
+    const university = await User.findById(universityId);
+    if (!university) {
+        throw new Error("University not found.");
+    }
+
+    // 4. Generate UNIQUE degreeId (loop until unused)
     let uniqueDegreeId: string = "";
     let isUnique = false;
 
@@ -52,7 +59,18 @@ export const issueDegree = async (universityId: string, payload: IssueDegreePayl
         }
     }
 
-    // 4. Create Degree document
+    // 5. Generate Credential Hash (SHA-256)
+    const issueDate = new Date();
+    const credentialHash = generateCredentialHash({
+        degreeId: uniqueDegreeId,
+        studentName,
+        degreeTitle,
+        branch,
+        issueDate,
+        institutionName: university.name,
+    });
+
+    // 6. Create Degree document
     const newDegree = await Degree.create({
         degreeId: uniqueDegreeId,
         studentId: student._id,
@@ -60,7 +78,8 @@ export const issueDegree = async (universityId: string, payload: IssueDegreePayl
         studentName, // Snapshot of name at issuance time
         degreeTitle,
         branch,
-        credentialHash: payload.credentialHash ?? null,
+        issueDate,
+        credentialHash,
         status: "valid",
     });
 

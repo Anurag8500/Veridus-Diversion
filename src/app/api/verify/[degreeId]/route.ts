@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Degree from "@/models/Degree";
+import { generateCredentialHash } from "@/lib/hashCredential";
 
 /**
  * Public API endpoint for credential verification.
@@ -29,15 +30,35 @@ export async function GET(
             );
         }
 
-        // 3. Construct safe response (excluding sensitive ObjectIds/IDs)
+        const institutionName = (degree.universityId as any)?.name || "Unknown Institution";
+        let verificationStatus = degree.status;
+
+        // 3. Perform Hash Integrity Check (Tamper-proofing)
+        if (degree.credentialHash) {
+            const calculatedHash = generateCredentialHash({
+                degreeId: degree.degreeId,
+                studentName: degree.studentName,
+                degreeTitle: degree.degreeTitle,
+                branch: degree.branch,
+                issueDate: degree.issueDate,
+                institutionName: institutionName
+            });
+
+            if (calculatedHash !== degree.credentialHash) {
+                verificationStatus = "TAMPERED";
+            }
+        }
+
+        // 4. Construct safe response (excluding sensitive ObjectIds/IDs)
         const safeCredential = {
             degreeId: degree.degreeId,
             studentName: degree.studentName,
             degreeTitle: degree.degreeTitle,
             branch: degree.branch,
             issueDate: degree.issueDate,
-            status: degree.status,
-            institutionName: (degree.universityId as any)?.name || "Unknown Institution"
+            status: verificationStatus,
+            institutionName: institutionName,
+            isAuthentic: verificationStatus !== "TAMPERED"
         };
 
         return NextResponse.json(
