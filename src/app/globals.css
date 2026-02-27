@@ -1,28 +1,26 @@
-@import "tailwindcss";
-
-@theme {
-  --font-sans: var(--font-inter);
-
-  --color-background-base: #0a0a0a;
-  --color-background-surface: #121212;
-  --color-background-elevated: #1a1a1a;
-
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a3a3a3;
-  --color-text-tertiary: #737373;
-
-  --color-brand: #ffffff;
-  --color-brand-muted: rgba(255, 255, 255, 0.1);
-  --color-brand-hover: #e5e5e5;
-
-  --color-border-subtle: rgba(255, 255, 255, 0.05);
-  --color-border-base: rgba(255, 255, 255, 0.1);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
     --background: #0a0a0a;
     --foreground: #ffffff;
+
+    --color-background-base: #0a0a0a;
+    --color-background-surface: #121212;
+    --color-background-elevated: #1a1a1a;
+
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a3a3a3;
+    --color-text-tertiary: #737373;
+
+    --color-brand: #ffffff;
+    --color-brand-muted: rgba(255, 255, 255, 0.1);
+    --color-brand-hover: #e5e5e5;
+
+    --color-border-subtle: rgba(255, 255, 255, 0.05);
+    --color-border-base: rgba(255, 255, 255, 0.1);
   }
 
   html {
@@ -47,7 +45,6 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: var(--font-inter), sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -56,5 +53,29 @@
 @layer utilities {
   .text-glow {
     text-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+  }
+
+  .bg-background-base {
+    background-color: var(--color-background-base);
+  }
+
+  .bg-background-surface {
+    background-color: var(--color-background-surface);
+  }
+
+  .bg-background-elevated {
+    background-color: var(--color-background-elevated);
+  }
+
+  .text-text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-text-tertiary {
+    color: var(--color-text-tertiary);
   }
 }
